@@ -22,10 +22,10 @@ sensor_bp = Blueprint("sensor", __name__)
 #
 # Never hardcode real values here — that's what triggered GitHub's block.
 # ---------------------------------------------------------------------------
-TWILIO_ACCOUNT_SID = os.environ.get("AC006d3c35c2b16f01bcfc49621dff7c86")
-TWILIO_AUTH_TOKEN = os.environ.get("5717bc1c7a6f0718fed3167da6bf3d51")
+TWILIO_ACCOUNT_SID = os.environ.get("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab")
+TWILIO_AUTH_TOKEN = os.environ.get("22925b6605eb09af10288949a7125c72")
 TWILIO_WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
-TWILIO_WHATSAPP_TO = os.environ.get("+917003919438")
+TWILIO_WHATSAPP_TO = os.environ.get("+919993522071")
 TWILIO_SMS_FROM = os.environ.get("+14783162210")
 TWILIO_SMS_TO = os.environ.get("+919993522071")
 
