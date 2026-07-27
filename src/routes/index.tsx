@@ -193,7 +193,7 @@ function useLiveSensors(thresholds: Thresholds) {
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/sensor");
+      const response = await fetch("https://alertquakeai.onrender.com/api/sensor");
       const data = await response.json();
 
       // Update sensor cards
