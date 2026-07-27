@@ -1,0 +1,252 @@
+.emergency-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.82);
+backdrop-filter:blur(10px);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:99999;
+animation:fadeIn .4s ease;
+}
+
+.emergency-card{
+
+width:920px;
+
+border-radius:28px;
+
+overflow:hidden;
+
+background:#12090b;
+
+border:3px solid #ff3131;
+
+box-shadow:
+0 0 25px #ff0000,
+0 0 70px rgba(255,0,0,.45);
+
+animation:
+
+popup .35s ease,
+
+borderFlash 1s infinite;
+
+}
+
+@keyframes popup{
+
+0%{
+
+transform:scale(.7);
+
+opacity:0;
+
+}
+
+100%{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+}
+
+@keyframes borderFlash{
+
+0%{
+
+box-shadow:
+0 0 15px red,
+0 0 40px red;
+
+}
+
+50%{
+
+box-shadow:
+0 0 45px #ff4444,
+0 0 90px #ff0000;
+
+}
+
+100%{
+
+box-shadow:
+0 0 15px red,
+0 0 40px red;
+
+}
+
+}
+
+.emergency-header{
+
+padding:22px;
+
+background:linear-gradient(
+90deg,
+#900,
+#d60000,
+#900
+);
+
+animation:headerMove 2s linear infinite;
+
+background-size:250%;
+
+}
+
+@keyframes headerMove{
+
+0%{
+background-position:0%;
+}
+
+100%{
+background-position:250%;
+}
+
+}
+
+.warning-title{
+
+font-size:42px;
+
+font-weight:900;
+
+letter-spacing:2px;
+
+color:white;
+
+}
+
+.warning-sub{
+
+color:#ffd4d4;
+
+font-size:18px;
+
+margin-top:5px;
+
+}
+
+.metric-card{
+
+background:rgba(255,0,0,.08);
+
+border:1px solid rgba(255,0,0,.4);
+
+border-radius:18px;
+
+padding:18px;
+
+transition:.3s;
+
+}
+
+.metric-card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 0 20px red;
+
+}
+
+.metric-value{
+
+font-size:58px;
+
+font-weight:900;
+
+color:white;
+
+}
+
+.take-cover{
+
+font-size:75px;
+
+font-weight:900;
+
+color:#ffeb3b;
+
+animation:blink .8s infinite;
+
+}
+
+@keyframes blink{
+
+50%{
+
+opacity:.35;
+
+}
+
+}
+
+.dismiss-btn{
+
+background:#232323;
+
+color:white;
+
+border-radius:12px;
+
+padding:12px 22px;
+
+transition:.3s;
+
+cursor:pointer;
+
+}
+
+.dismiss-btn:hover{
+
+background:#444;
+
+}
+
+.dismiss-forever{
+
+background:#d50000;
+
+color:white;
+
+border-radius:12px;
+
+padding:12px 22px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.dismiss-forever:hover{
+
+background:#ff1a1a;
+
+}
+
+.screen-shake{
+
+animation:shake .25s infinite;
+
+}
+
+@keyframes shake{
+
+0%{transform:translate(1px,1px)}
+
+25%{transform:translate(-2px,2px)}
+
+50%{transform:translate(2px,-2px)}
+
+75%{transform:translate(-2px,-1px)}
+
+100%{transform:translate(1px,2px)}
+
+}
