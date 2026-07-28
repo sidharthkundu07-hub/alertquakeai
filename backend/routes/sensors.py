@@ -182,6 +182,8 @@ def get_sensor_data():
         snapshot = dict(data)
         snapshot["source"] = "live" if is_live else "demo"
 
+    _maybe_send_alert(snapshot)    
+
     return jsonify(snapshot)
 
 
