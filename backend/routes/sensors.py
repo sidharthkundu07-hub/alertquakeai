@@ -22,13 +22,13 @@ ALERT_MESSAGE = (
 # ---------------------------------------------------------------------------
 
 # --- WhatsApp account ---
-WHATSAPP_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab"
+WHATSAPP_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7a"
 WHATSAPP_TOKEN = "71e7732bbfa7d6676ab56a7e7b41ee7c"
 WHATSAPP_FROM = "whatsapp:+14155238886"
 WHATSAPP_TO = "whatsapp:+919993522071"
 
 # --- SMS account ---
-SMS_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab"
+SMS_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7a"
 SMS_TOKEN = "71e7732bbfa7d6676ab56a7e7b41ee7c"
 SMS_FROM = "+14783162210"
 SMS_TO = "+919993522071"
