@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+
 from routes.sensors import sensor_bp
 from flask import Flask
 from flask_cors import CORS
@@ -12,7 +12,7 @@ backend_dir = Path(__file__).resolve().parent
 env_path = backend_dir / '.env'
 
 # Explicitly load the file using its full path
-load_dotenv(dotenv_path=env_path)
+# load_dotenv(dotenv_path=env_path)
 
 # --- QUICK DIAGNOSTIC PRINT ---
 # This will tell you instantly in your terminal if Python successfully found your file
