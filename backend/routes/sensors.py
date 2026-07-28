@@ -122,7 +122,7 @@ def _maybe_send_alert(reading):
         or reading["seis"] >= RISK_THRESHOLDS["seis"]
     )
     if is_high_risk and now >= _alert_cooldown_until:
-        send_whatsapp_alert()
+        # send_whatsapp_alert()
         send_sms_alert()
         _alert_cooldown_until = now + ALERT_COOLDOWN_SECONDS
 
