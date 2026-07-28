@@ -9,23 +9,22 @@ from twilio.base.exceptions import TwilioRestException
 sensor_bp = Blueprint("sensor", __name__)
 
 # ---------------------------------------------------------------------------
-# Twilio setup — ONE client, credentials read from environment variables only.
-# Set these before running the server (e.g. in a .env file loaded via
-# python-dotenv, or exported in your shell / hosting platform's config):
+# Twilio — TWO separate accounts (WhatsApp and SMS use different SID/token
+# pairs). Set these on Render (Dashboard -> your service -> Environment):
 #
-#   TWILIO_ACCOUNT_SID=xxxxxxxx
-#   TWILIO_AUTH_TOKEN=xxxxxxxx
+#   TWILIO_WHATSAPP_SID=...
+#   TWILIO_WHATSAPP_TOKEN=...
 #   TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-#   TWILIO_WHATSAPP_TO=whatsapp:+917003919438
-#   TWILIO_SMS_FROM=+14783162210
-#   TWILIO_SMS_TO=+919993522071
+#   TWILIO_WHATSAPP_TO=whatsapp:+91XXXXXXXXXX
 #
-# Never hardcode real values here — that's what triggered GitHub's block.
+#   TWILIO_SMS_SID=...
+#   TWILIO_SMS_TOKEN=...
+#   TWILIO_SMS_FROM=+1XXXXXXXXXX
+#   TWILIO_SMS_TO=+91XXXXXXXXXX
+#
+# os.environ.get(...) takes the NAME of the env var, never the secret
+# itself — that mismatch was why nothing was sending before.
 # ---------------------------------------------------------------------------
-import os
-from twilio.rest import Client
-from twilio.base.exceptions import TwilioRestException
-
 ALERT_MESSAGE = (
     "🚨 RED ALERT!\n\n"
     "AlertQuake AI has detected possible earthquake activity.\n\n"
@@ -40,7 +39,7 @@ WHATSAPP_TO = os.environ.get("+917003919438")
 
 _whatsapp_client = None
 if WHATSAPP_SID and WHATSAPP_TOKEN:
-    _whatsapp_client = Client("AC006d3c35c2b16f01bcfc49621dff7c86", "5717bc1c7a6f0718fed3167da6bf3d51")
+    _whatsapp_client = Client(WHATSAPP_SID, WHATSAPP_TOKEN)
 else:
     print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
 
@@ -52,33 +51,37 @@ SMS_TO = os.environ.get("+919993522071")
 
 _sms_client = None
 if SMS_SID and SMS_TOKEN:
-    _sms_client = Client("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab", "71e7732bbfa7d6676ab56a7e7b41ee7c")
+    _sms_client = Client(SMS_SID, SMS_TOKEN)
 else:
     print("[alerts] TWILIO_SMS_SID / TWILIO_SMS_TOKEN not set — SMS alerts disabled.")
 
 
-# def send_whatsapp_alert():
-#     if not _whatsapp_client or not WHATSAPP_TO:
-#         return
-#     try:
-#         _whatsapp_client.messages.create(
-#             body=ALERT_MESSAGE,
-#             from_=WHATSAPP_FROM,
-#             to=WHATSAPP_TO,
-#         )
-#     except TwilioRestException as e:
-#         print(f"[alerts] WhatsApp alert failed: {e}")
+def send_whatsapp_alert():
+    if not _whatsapp_client or not WHATSAPP_TO:
+        print("[alerts] WhatsApp skipped: client or TO number missing.")
+        return
+    try:
+        msg = _whatsapp_client.messages.create(
+            body=ALERT_MESSAGE,
+            from_=WHATSAPP_FROM,
+            to=WHATSAPP_TO,
+        )
+        print(f"[alerts] WhatsApp sent: {msg.sid}")
+    except TwilioRestException as e:
+        print(f"[alerts] WhatsApp alert failed: {e}")
 
 
 def send_sms_alert():
     if not _sms_client or not SMS_FROM or not SMS_TO:
+        print("[alerts] SMS skipped: client or FROM/TO number missing.")
         return
     try:
-        _sms_client.messages.create(
+        msg = _sms_client.messages.create(
             body=ALERT_MESSAGE,
             from_=SMS_FROM,
             to=SMS_TO,
         )
+        print(f"[alerts] SMS sent: {msg.sid}")
     except TwilioRestException as e:
         print(f"[alerts] SMS alert failed: {e}")
 
@@ -88,7 +91,7 @@ def send_sms_alert():
 # ---------------------------------------------------------------------------
 _lock = Lock()
 data = {
-    "vib": 30.05,
+    "vib": 20.05,
     "tilt": 0.25,
     "seis": 2.2,
     "temp": 28.0,
@@ -98,22 +101,19 @@ data = {
     "soil": 70.0,
     "dist": 12.0,
 }
-_last_esp32_update = None  # timestamp of the last real POST from the ESP32
-DEMO_FALLBACK_TIMEOUT = 15  # seconds without real data before we simulate demo values
+_last_esp32_update = None
+DEMO_FALLBACK_TIMEOUT = 15
 
-# Tune these to whatever actually counts as "earthquake-like" for your sensors
 RISK_THRESHOLDS = {
     "vib": 25.0,
     "tilt": 3.0,
     "seis": 6.0,
 }
-ALERT_COOLDOWN_SECONDS = 300  # don't re-send alerts more than once every 5 min
+ALERT_COOLDOWN_SECONDS = 300
 _alert_cooldown_until = 0.0
 
 
 def _maybe_send_alert(reading):
-    """Only ever called with REAL sensor readings from the ESP32, and only
-    fires when a threshold is actually crossed — never on server startup."""
     global _alert_cooldown_until
     now = time.time()
     is_high_risk = (
@@ -122,17 +122,13 @@ def _maybe_send_alert(reading):
         or reading["seis"] >= RISK_THRESHOLDS["seis"]
     )
     if is_high_risk and now >= _alert_cooldown_until:
-        # send_whatsapp_alert()
+        send_whatsapp_alert()
         send_sms_alert()
         _alert_cooldown_until = now + ALERT_COOLDOWN_SECONDS
 
 
 @sensor_bp.route("/api/sensor", methods=["POST"])
 def receive_sensor_data():
-    """The ESP32 posts real readings here, e.g.:
-    { "vib": 21.4, "tilt": 0.31, "seis": 2.8, "temp": 27.9, ... }
-    Only the keys present in the payload are updated; missing/invalid keys
-    are left untouched instead of silently randomized."""
     global _last_esp32_update
 
     payload = request.get_json(silent=True)
@@ -155,11 +151,6 @@ def receive_sensor_data():
 
 @sensor_bp.route("/api/sensor", methods=["GET"])
 def get_sensor_data():
-    """The dashboard reads current readings here. Serves real ESP32 data
-    whenever it's arrived within the last DEMO_FALLBACK_TIMEOUT seconds;
-    otherwise falls back to a smooth simulated walk so the UI still has
-    something to show while no hardware is connected. Demo mode NEVER
-    triggers an alert."""
     with _lock:
         is_live = (
             _last_esp32_update is not None
@@ -167,7 +158,7 @@ def get_sensor_data():
         )
 
         if not is_live:
-            import random  # local import: only needed in demo/simulation mode
+            import random
 
             data["vib"] = round(data["vib"] + random.uniform(-0.2, 0.2), 2)
             data["tilt"] = round(data["tilt"] + random.uniform(-0.02, 0.02), 2)
@@ -193,3 +184,11 @@ def get_sensor_data():
         snapshot["source"] = "live" if is_live else "demo"
 
     return jsonify(snapshot)
+
+
+@sensor_bp.route("/api/test-alert", methods=["GET"])
+def test_alert():
+    """Manual trigger for testing — visit this URL directly."""
+    send_whatsapp_alert()
+    send_sms_alert()
+    return jsonify({"status": "test alert dispatched — check Render logs for delivery result"})
