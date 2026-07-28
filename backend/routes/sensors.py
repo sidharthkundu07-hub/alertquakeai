@@ -33,16 +33,16 @@ ALERT_MESSAGE = (
 )
 
 # --- WhatsApp account ---
-# WHATSAPP_SID = os.environ.get("AC006d3c35c2b16f01bcfc49621dff7c86")
-# WHATSAPP_TOKEN = os.environ.get("5717bc1c7a6f0718fed3167da6bf3d51")
-# WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
-# WHATSAPP_TO = os.environ.get("+917003919438")
+WHATSAPP_SID = os.environ.get("AC006d3c35c2b16f01bcfc49621dff7c86")
+WHATSAPP_TOKEN = os.environ.get("5717bc1c7a6f0718fed3167da6bf3d51")
+WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
+WHATSAPP_TO = os.environ.get("+917003919438")
 
-# _whatsapp_client = None
-# if WHATSAPP_SID and WHATSAPP_TOKEN:
-#     _whatsapp_client = Client(WHATSAPP_SID, WHATSAPP_TOKEN)
-# else:
-#     print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
+_whatsapp_client = None
+if WHATSAPP_SID and WHATSAPP_TOKEN:
+    _whatsapp_client = Client("AC006d3c35c2b16f01bcfc49621dff7c86", "5717bc1c7a6f0718fed3167da6bf3d51")
+else:
+    print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
 
 # --- SMS account (separate credentials) ---
 SMS_SID = os.environ.get("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab")
@@ -52,7 +52,7 @@ SMS_TO = os.environ.get("+919993522071")
 
 _sms_client = None
 if SMS_SID and SMS_TOKEN:
-    _sms_client = Client(SMS_SID, SMS_TOKEN)
+    _sms_client = Client("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab", "71e7732bbfa7d6676ab56a7e7b41ee7c")
 else:
     print("[alerts] TWILIO_SMS_SID / TWILIO_SMS_TOKEN not set — SMS alerts disabled.")
 
