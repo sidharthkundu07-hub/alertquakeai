@@ -9,21 +9,7 @@ from twilio.base.exceptions import TwilioRestException
 sensor_bp = Blueprint("sensor", __name__)
 
 # ---------------------------------------------------------------------------
-# Twilio — TWO separate accounts (WhatsApp and SMS use different SID/token
-# pairs). Set these on Render (Dashboard -> your service -> Environment):
-#
-#   TWILIO_WHATSAPP_SID=...
-#   TWILIO_WHATSAPP_TOKEN=...
-#   TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-#   TWILIO_WHATSAPP_TO=whatsapp:+91XXXXXXXXXX
-#
-#   TWILIO_SMS_SID=...
-#   TWILIO_SMS_TOKEN=...
-#   TWILIO_SMS_FROM=+1XXXXXXXXXX
-#   TWILIO_SMS_TO=+91XXXXXXXXXX
-#
-# os.environ.get(...) takes the NAME of the env var, never the secret
-# itself — that mismatch was why nothing was sending before.
+# Global Alert Content
 # ---------------------------------------------------------------------------
 ALERT_MESSAGE = (
     "🚨 RED ALERT!\n\n"
@@ -31,31 +17,45 @@ ALERT_MESSAGE = (
     "In case of an EMERGENCY dial 112."
 )
 
+# ---------------------------------------------------------------------------
+# Twilio Account Configurations (Hardcoded Production Access)
+# ---------------------------------------------------------------------------
+
 # --- WhatsApp account ---
-WHATSAPP_SID = os.environ.get("AC006d3c35c2b16f01bcfc49621dff7c86")
-WHATSAPP_TOKEN = os.environ.get("5717bc1c7a6f0718fed3167da6bf3d51")
-WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
-WHATSAPP_TO = os.environ.get("+917003919438")
+WHATSAPP_SID = "ACa006d3c35c2b16f01bcfc49621dff7c86"
+WHATSAPP_TOKEN = "5717bc1c7a6f0718fed3167da6bf3d51"
+WHATSAPP_FROM = "whatsapp:+14155238886"
+WHATSAPP_TO = "whatsapp:+917003919438"
 
+# --- SMS account ---
+SMS_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab"
+SMS_TOKEN = "71e7732bbfa7d6676ab56a7e7b41ee7c"
+SMS_FROM = "+14783162210"
+SMS_TO = "+919993522071"
+
+# ---------------------------------------------------------------------------
+# Twilio API Client Initializations
+# ---------------------------------------------------------------------------
 _whatsapp_client = None
-if WHATSAPP_SID and WHATSAPP_TOKEN:
-    _whatsapp_client = Client(WHATSAPP_SID, WHATSAPP_TOKEN)
-else:
-    print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
-
-# --- SMS account (separate credentials) ---
-SMS_SID = os.environ.get("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab")
-SMS_TOKEN = os.environ.get("71e7732bbfa7d6676ab56a7e7b41ee7c")
-SMS_FROM = os.environ.get("+14783162210")
-SMS_TO = os.environ.get("+919993522071")
-
 _sms_client = None
+
+# Initialize SMS
 if SMS_SID and SMS_TOKEN:
     _sms_client = Client(SMS_SID, SMS_TOKEN)
+    print("✅ Twilio SMS Client initialized successfully!")
 else:
     print("[alerts] TWILIO_SMS_SID / TWILIO_SMS_TOKEN not set — SMS alerts disabled.")
 
+# Initialize WhatsApp
+if WHATSAPP_SID and WHATSAPP_TOKEN:
+    _whatsapp_client = Client(WHATSAPP_SID, WHATSAPP_TOKEN)
+    print("✅ Twilio WhatsApp Client initialized successfully!")
+else:
+    print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
 
+# ---------------------------------------------------------------------------
+# Dispatch Logic Functions
+# ---------------------------------------------------------------------------
 def send_whatsapp_alert():
     if not _whatsapp_client or not WHATSAPP_TO:
         print("[alerts] WhatsApp skipped: client or TO number missing.")
@@ -66,7 +66,7 @@ def send_whatsapp_alert():
             from_=WHATSAPP_FROM,
             to=WHATSAPP_TO,
         )
-        print(f"[alerts] WhatsApp sent: {msg.sid}")
+        print(f"[alerts] WhatsApp sent successfully! SID: {msg.sid}")
     except TwilioRestException as e:
         print(f"[alerts] WhatsApp alert failed: {e}")
 
@@ -81,17 +81,16 @@ def send_sms_alert():
             from_=SMS_FROM,
             to=SMS_TO,
         )
-        print(f"[alerts] SMS sent: {msg.sid}")
+        print(f"[alerts] SMS sent successfully! SID: {msg.sid}")
     except TwilioRestException as e:
         print(f"[alerts] SMS alert failed: {e}")
 
-
 # ---------------------------------------------------------------------------
-# Sensor state
+# Live Sensor Matrix State
 # ---------------------------------------------------------------------------
 _lock = Lock()
 data = {
-    "vib": 20.05,
+    "vib": 26.05,
     "tilt": 0.25,
     "seis": 2.2,
     "temp": 28.0,
@@ -188,7 +187,7 @@ def get_sensor_data():
 
 @sensor_bp.route("/api/test-alert", methods=["GET"])
 def test_alert():
-    """Manual trigger for testing — visit this URL directly."""
+    """Manual direct routing trigger verification endpoint"""
     send_whatsapp_alert()
     send_sms_alert()
     return jsonify({"status": "test alert dispatched — check Render logs for delivery result"})

@@ -1,8 +1,25 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from routes.sensors import sensor_bp
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
+
+# Find the exact folder where app.py lives, then look for the .env file inside it
+backend_dir = Path(__file__).resolve().parent
+env_path = backend_dir / '.env'
+
+# Explicitly load the file using its full path
+load_dotenv(dotenv_path=env_path)
+
+# --- QUICK DIAGNOSTIC PRINT ---
+# This will tell you instantly in your terminal if Python successfully found your file
+if env_path.exists():
+    print(f"✅ Success: Found .env file at {env_path}")
+else:
+    print(f"❌ Error: Cannot find .env file at {env_path}. Make sure it is inside the backend folder!")
 app = Flask(__name__)
 CORS(app)
 
