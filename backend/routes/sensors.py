@@ -22,18 +22,9 @@ sensor_bp = Blueprint("sensor", __name__)
 #
 # Never hardcode real values here — that's what triggered GitHub's block.
 # ---------------------------------------------------------------------------
-TWILIO_ACCOUNT_SID = os.environ.get("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab")
-TWILIO_AUTH_TOKEN = os.environ.get("22925b6605eb09af10288949a7125c72")
-TWILIO_WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
-TWILIO_WHATSAPP_TO = os.environ.get("+919993522071")
-TWILIO_SMS_FROM = os.environ.get("+14783162210")
-TWILIO_SMS_TO = os.environ.get("+919993522071")
-
-_twilio_client = None
-if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
-    _twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-else:
-    print("[alerts] TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN not set — alerts disabled.")
+import os
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
 
 ALERT_MESSAGE = (
     "🚨 RED ALERT!\n\n"
@@ -41,28 +32,52 @@ ALERT_MESSAGE = (
     "In case of an EMERGENCY dial 112."
 )
 
+# --- WhatsApp account ---
+# WHATSAPP_SID = os.environ.get("AC006d3c35c2b16f01bcfc49621dff7c86")
+# WHATSAPP_TOKEN = os.environ.get("5717bc1c7a6f0718fed3167da6bf3d51")
+# WHATSAPP_FROM = os.environ.get("+14155238886", "whatsapp:+14155238886")
+# WHATSAPP_TO = os.environ.get("+917003919438")
 
-def send_whatsapp_alert():
-    if not _twilio_client or not TWILIO_WHATSAPP_TO:
-        return
-    try:
-        _twilio_client.messages.create(
-            body=ALERT_MESSAGE,
-            from_=TWILIO_WHATSAPP_FROM,
-            to=TWILIO_WHATSAPP_TO,
-        )
-    except TwilioRestException as e:
-        print(f"[alerts] WhatsApp alert failed: {e}")
+# _whatsapp_client = None
+# if WHATSAPP_SID and WHATSAPP_TOKEN:
+#     _whatsapp_client = Client(WHATSAPP_SID, WHATSAPP_TOKEN)
+# else:
+#     print("[alerts] TWILIO_WHATSAPP_SID / TWILIO_WHATSAPP_TOKEN not set — WhatsApp alerts disabled.")
+
+# --- SMS account (separate credentials) ---
+SMS_SID = os.environ.get("ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab")
+SMS_TOKEN = os.environ.get("71e7732bbfa7d6676ab56a7e7b41ee7c")
+SMS_FROM = os.environ.get("+14783162210")
+SMS_TO = os.environ.get("+919993522071")
+
+_sms_client = None
+if SMS_SID and SMS_TOKEN:
+    _sms_client = Client(SMS_SID, SMS_TOKEN)
+else:
+    print("[alerts] TWILIO_SMS_SID / TWILIO_SMS_TOKEN not set — SMS alerts disabled.")
+
+
+# def send_whatsapp_alert():
+#     if not _whatsapp_client or not WHATSAPP_TO:
+#         return
+#     try:
+#         _whatsapp_client.messages.create(
+#             body=ALERT_MESSAGE,
+#             from_=WHATSAPP_FROM,
+#             to=WHATSAPP_TO,
+#         )
+#     except TwilioRestException as e:
+#         print(f"[alerts] WhatsApp alert failed: {e}")
 
 
 def send_sms_alert():
-    if not _twilio_client or not TWILIO_SMS_FROM or not TWILIO_SMS_TO:
+    if not _sms_client or not SMS_FROM or not SMS_TO:
         return
     try:
-        _twilio_client.messages.create(
+        _sms_client.messages.create(
             body=ALERT_MESSAGE,
-            from_=TWILIO_SMS_FROM,
-            to=TWILIO_SMS_TO,
+            from_=SMS_FROM,
+            to=SMS_TO,
         )
     except TwilioRestException as e:
         print(f"[alerts] SMS alert failed: {e}")
