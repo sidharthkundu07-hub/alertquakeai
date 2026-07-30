@@ -31,7 +31,7 @@ WHATSAPP_TO = "whatsapp:+917003919438"
 SMS_SID = "AC0a0fbcf15ff135a8fc83e7a4f9d1f96e"
 SMS_TOKEN = "374a620bf8e96fcc3754b460b79f02ae"
 SMS_FROM = "+14783162210"
-SMS_TO = "+917003919438"
+SMS_TO = "+919038714944"
 
 # ---------------------------------------------------------------------------
 # Twilio API Client Initializations
