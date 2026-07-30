@@ -22,16 +22,16 @@ ALERT_MESSAGE = (
 # ---------------------------------------------------------------------------
 
 # --- WhatsApp account ---
-WHATSAPP_SID = "AC0a0fbcf15ff135a8fc83e7a4f9d1f96e"
+WHATSAPP_SID = "AC006d3c35c2b16f01bcfc49621dff7c86"
 WHATSAPP_TOKEN = "c0bcbf3045dbb676e08b222e82899f29"
 WHATSAPP_FROM = "whatsapp:+14155238886"
-WHATSAPP_TO = "whatsapp:+919038714944"
+WHATSAPP_TO = "whatsapp:+917003919438"
 
 # --- SMS account ---
-SMS_SID = "AC0a0fbcf15ff135a8fc83e7a4f9d1f96e"
+SMS_SID = "AC006d3c35c2b16f01bcfc49621dff7c86"
 SMS_TOKEN = "c0bcbf3045dbb676e08b222e82899f29"
 SMS_FROM = "+14783162210"
-SMS_TO = "+919038714944"
+SMS_TO = "+917003919438"
 
 # ---------------------------------------------------------------------------
 # Twilio API Client Initializations
