@@ -28,10 +28,10 @@ WHATSAPP_FROM = "whatsapp:+14155238886"
 WHATSAPP_TO = "whatsapp:+917003919438"
 
 # --- SMS account ---
-SMS_SID = "AC0a0fbcf15ff135a8fc83e7a4f9d1f96e"
-SMS_TOKEN = "374a620bf8e96fcc3754b460b79f02ae"
+SMS_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab"
+SMS_TOKEN = "4139677a016ced2702ee5fcee22316d8"
 SMS_FROM = "+14783162210"
-SMS_TO = "+919038714944"
+SMS_TO = "+919993522071"
 
 # ---------------------------------------------------------------------------
 # Twilio API Client Initializations
