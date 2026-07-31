@@ -28,10 +28,10 @@ WHATSAPP_FROM = "whatsapp:+14155238886"
 WHATSAPP_TO = "whatsapp:+917003919438"
 
 # --- SMS account ---
-SMS_SID = "ACa07f25dd63cffb3b7b6e9f3fc2e7b7ab"
-SMS_TOKEN = "09694b31a7a041d5f01c58ab8fb48cab"
+SMS_SID = "AC0a0fbcf15ff135a8fc83e7a4f9d1f96e"
+SMS_TOKEN = "374a620bf8e96fcc3754b460b79f02ae"
 SMS_FROM = "+14783162210"
-SMS_TO = "+919993522071"
+SMS_TO = "+919038714944"
 
 # ---------------------------------------------------------------------------
 # Twilio API Client Initializations
@@ -90,9 +90,9 @@ def send_sms_alert():
 # ---------------------------------------------------------------------------
 _lock = Lock()
 data = {
-    "vib": 26.05,
-    "tilt": 0.25,
-    "seis": 2.2,
+    "vib": 3.2,
+    "tilt": 0.8,
+    "seis": 1.5,
     "temp": 28.0,
     "hum": 68.0,
     "pres": 1008.0,
